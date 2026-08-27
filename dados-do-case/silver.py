@@ -156,7 +156,7 @@ def split_valid_rejected(bronze_rows, raw_records):
         if norm["email"]:
             valid.append(norm)
         else:
-            reason = "email ausente" if not row.get("email") else f"email inválido: {row.get('email')!r}"
+            reason = "email ausente" if not row.get("email") else f"email inválido: {row.get('email').strip()}"
             rejected.append({"reason": reason, "raw": raw_records[row["_row_id"]]})
     return valid, rejected
 
