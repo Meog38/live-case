@@ -19,6 +19,15 @@
       "segment": "cold"
     },
     {
+      "email": "carlos@example.com",
+      "name": "Carlos",
+      "phone": "+553133334444",
+      "company": "Beta Ltda",
+      "source": "indicacao",
+      "created_at": "2026-01-07",
+      "segment": "hot"
+    },
+    {
       "email": "pedro@empresa.com.br",
       "name": "Pedro Lima",
       "phone": "+5531988881111",
@@ -66,18 +75,6 @@
   ],
   "rejected": [
     {
-      "reason": "email inválido: carlos.example.com",
-      "raw": {
-        "name": "Carlos",
-        "email": "carlos.example.com",
-        "phone": "31 3333-4444",
-        "company": "Beta Ltda",
-        "message": "preciso de uma demo essa semana",
-        "source": "indicacao",
-        "created_at": "Jan 7, 2026"
-      }
-    },
-    {
       "reason": "email ausente",
       "raw": {
         "name": "Ana",
@@ -98,8 +95,8 @@
   ],
   "summary": {
     "received": 12,
-    "valid": 9,
+    "valid": 10,
     "duplicates_removed": 2,
-    "rejected": 3
+    "rejected": 2
   }
 }

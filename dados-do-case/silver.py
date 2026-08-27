@@ -42,6 +42,21 @@ def normalize_email(value):
     return cleaned
 
 
+def try_fix_missing_at(value):
+    """Corrige só o caso inequívoco de email sem '@' (ex: carlos.example.com -> carlos@example.com).
+    Não tenta adivinhar nada além disso — sem '@' e sem domínio claro, fica rejeitado."""
+    if not value:
+        return None
+    cleaned = value.strip().lower()
+    if "@" in cleaned or "." not in cleaned:
+        return None
+    local, _, rest = cleaned.partition(".")
+    if not local or "." not in rest:
+        return None
+    candidate = f"{local}@{rest}"
+    return candidate if EMAIL_RE.match(candidate) else None
+
+
 def normalize_name(row):
     raw = row.get("name") or row.get("nome")
     if not raw or not raw.strip():
@@ -153,6 +168,11 @@ def split_valid_rejected(bronze_rows, raw_records):
     valid, rejected = [], []
     for row in bronze_rows:
         norm = normalize_row(row)
+        if not norm["email"]:
+            fixed = try_fix_missing_at(row.get("email"))
+            if fixed:
+                print(f"[correção] email sem '@' corrigido: {row.get('email').strip()} -> {fixed}")
+                norm["email"] = fixed
         if norm["email"]:
             valid.append(norm)
         else:
