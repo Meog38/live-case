@@ -4,10 +4,13 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-RAW_PATH = Path(__file__).parent / "leads_raw.json"
-BRONZE_PATH = Path(__file__).parent / "bronze" / "leads_bronze.json"
-SILVER_DIR = Path(__file__).parent / "silver"
+CASE_DIR = Path(__file__).parent.parent
+REPO_ROOT = CASE_DIR.parent
+RAW_PATH = CASE_DIR / "leads_raw.json"
+BRONZE_PATH = CASE_DIR / "bronze" / "leads_bronze.json"
+SILVER_DIR = Path(__file__).parent
 SILVER_PATH = SILVER_DIR / "leads_clean.json"
+ENV_PATH = REPO_ROOT / ".env"
 
 GEMINI_MODEL = "gemini-3.6-flash"
 SEGMENT_PROMPT = """Classifique a intenção de compra do lead a partir da mensagem abaixo em exatamente uma palavra: hot, warm ou cold.
@@ -124,7 +127,20 @@ def classify_segment_rules(message):
     return "unknown"
 
 
+def load_dotenv(path):
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
 def make_ai_classifier():
+    load_dotenv(ENV_PATH)
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         print("[aviso] GEMINI_API_KEY ausente — usando classificador por regras.")

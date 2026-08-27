@@ -2,8 +2,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-RAW_PATH = Path(__file__).parent / "leads_raw.json"
-BRONZE_DIR = Path(__file__).parent / "bronze"
+RAW_PATH = Path(__file__).parent.parent / "leads_raw.json"
+BRONZE_DIR = Path(__file__).parent
 BRONZE_PATH = BRONZE_DIR / "leads_bronze.json"
 
 

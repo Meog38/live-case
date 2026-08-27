@@ -8,8 +8,8 @@ Receber `leads_raw.json` (dados de marketing bagunçados) e produzir um JSON pro
 
 Medallion simplificado, rodando local em JSON (sem banco — dado batch único, não ingestão contínua):
 
-- **`bronze/bronze.py`** → lê `leads_raw.json`, grava `bronze/leads_bronze.json`. Schema unificado (une `name`/`nome` como colunas separadas, sem escolher uma), todo campo cru vira texto ou `null`, nenhuma limpeza. É fidelidade ao dado como chegou — serve de auditoria, não de camada de negócio.
-- **`silver.py`** → lê o bronze, normaliza, valida, deduplica e classifica. Grava `silver/leads_clean.json` — exatamente o schema pedido no case.
+- **`dados-do-case/bronze/bronze.py`** → lê `dados-do-case/leads_raw.json`, grava `dados-do-case/bronze/leads_bronze.json`. Schema unificado (une `name`/`nome` como colunas separadas, sem escolher uma), todo campo cru vira texto ou `null`, nenhuma limpeza. É fidelidade ao dado como chegou — serve de auditoria, não de camada de negócio.
+- **`dados-do-case/silver/silver.py`** → lê o bronze, normaliza, valida, deduplica e classifica. Grava `dados-do-case/silver/leads_clean.json` — exatamente o schema pedido no case.
 - **Gold não foi construído** (ver Próximos passos) — o case não pede KPI/dashboard, só o JSON leads/rejected/summary que o silver já entrega.
 
 ## Decisões técnicas
@@ -45,4 +45,4 @@ Boa parte do trabalho aqui foi reconciliar sujeira que nunca deveria ter chegado
 
 - **Gold layer**: agregações por `segment`/`source` (contagens, taxa de rejeição) como fonte pra um dashboard — a visão original de arquitetura incluía isso, mas o case não exige e não deu tempo.
 - **Testes unitários isolados** pra edge cases fora do dataset real (telefone com 8 dígitos, data tipo `"abc"`, etc.) — hoje a cobertura vem só das asserções contra o dado real.
-- **Rotacionar a `GEMINI_API_KEY`** usada nesta sessão — foi colada em texto puro no chat pra viabilizar o teste ao vivo.
+

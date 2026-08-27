@@ -1,7 +1,7 @@
 [
   {
     "_row_id": 0,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Maria Silva",
     "email": "maria@example.com",
     "phone": "+55 11 91234-5678",
@@ -13,7 +13,7 @@
   },
   {
     "_row_id": 1,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "  joão souza ",
     "email": "JOAO@EXAMPLE.COM ",
     "phone": "11987654321",
@@ -25,7 +25,7 @@
   },
   {
     "_row_id": 2,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "João Souza",
     "email": "joao@example.com",
     "phone": "11987654321",
@@ -37,7 +37,7 @@
   },
   {
     "_row_id": 3,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Carlos",
     "email": "carlos.example.com",
     "phone": "31 3333-4444",
@@ -49,7 +49,7 @@
   },
   {
     "_row_id": 4,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Ana",
     "email": null,
     "phone": "(21) 99999-0000",
@@ -61,7 +61,7 @@
   },
   {
     "_row_id": 5,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "PEDRO LIMA",
     "email": "pedro@empresa.com.br",
     "phone": "+55(31)98888-1111",
@@ -73,7 +73,7 @@
   },
   {
     "_row_id": 6,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": null,
     "email": "lucia@test.io",
     "phone": null,
@@ -85,7 +85,7 @@
   },
   {
     "_row_id": 7,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": null,
     "email": null,
     "phone": null,
@@ -97,7 +97,7 @@
   },
   {
     "_row_id": 8,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Rafael",
     "email": "rafa@x.com",
     "phone": "11 90000-0000",
@@ -109,7 +109,7 @@
   },
   {
     "_row_id": 9,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Bia",
     "email": "test+promo@gmail.com ",
     "phone": "",
@@ -121,7 +121,7 @@
   },
   {
     "_row_id": 10,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Maria Silva",
     "email": "maria@example.com",
     "phone": "",
@@ -133,7 +133,7 @@
   },
   {
     "_row_id": 11,
-    "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
+    "_ingested_at": "2026-08-27T20:50:44.598228+00:00",
     "name": "Otávio",
     "email": "otavio@corp.com",
     "phone": "+55 41 90000-1234",
