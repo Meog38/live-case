@@ -213,6 +213,38 @@ def validate_output(bronze_rows, valid_rows, rejected_rows, leads, duplicates_re
         assert set(rej.keys()) == {"reason", "raw"}, "schema de rejected incorreto"
 
 
+def validate_against_case_schema(output):
+    """Confere o output final contra o contrato literal do case.md (tipos, chaves, valores)."""
+    assert set(output.keys()) == {"leads", "rejected", "summary"}, "top-level deve ter exatamente leads/rejected/summary"
+
+    lead_keys = {"email", "name", "phone", "company", "source", "created_at", "segment"}
+    nullable_str_fields = ("name", "phone", "company", "source", "created_at")
+    date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+    seen_emails = set()
+    for lead in output["leads"]:
+        assert set(lead.keys()) == lead_keys, f"lead com chaves erradas: {lead.keys()}"
+        assert isinstance(lead["email"], str) and lead["email"], "email deve ser string não-vazia"
+        assert lead["email"] == lead["email"].strip().lower(), "email deve estar minúsculo e sem espaços"
+        assert EMAIL_RE.match(lead["email"]), f"email não parece válido: {lead['email']}"
+        assert lead["email"] not in seen_emails, f"email duplicado no output: {lead['email']}"
+        seen_emails.add(lead["email"])
+        for field in nullable_str_fields:
+            assert lead[field] is None or isinstance(lead[field], str), f"{field} deve ser string ou null"
+        if lead["created_at"] is not None:
+            assert date_re.match(lead["created_at"]), f"created_at fora do formato ISO: {lead['created_at']}"
+        assert lead["segment"] in {"hot", "warm", "cold", "unknown"}, f"segment inválido: {lead['segment']}"
+
+    for rej in output["rejected"]:
+        assert set(rej.keys()) == {"reason", "raw"}, f"rejected com chaves erradas: {rej.keys()}"
+        assert isinstance(rej["reason"], str) and rej["reason"], "reason deve ser string não-vazia"
+        assert isinstance(rej["raw"], dict), "raw deve ser objeto"
+
+    summary_keys = {"received", "valid", "duplicates_removed", "rejected"}
+    assert set(output["summary"].keys()) == summary_keys, "summary com chaves erradas"
+    for key in summary_keys:
+        assert isinstance(output["summary"][key], int), f"summary.{key} deve ser inteiro"
+
+
 if __name__ == "__main__":
     bronze_rows = load_json(BRONZE_PATH)
     raw_records = load_json(RAW_PATH)
@@ -237,6 +269,10 @@ if __name__ == "__main__":
     SILVER_DIR.mkdir(exist_ok=True)
     with open(SILVER_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
+
+    written = load_json(SILVER_PATH)
+    validate_against_case_schema(written)
+    print("schema check: OK — leads_clean.json bate com o contrato do case.md")
 
     print(json.dumps(output["summary"], ensure_ascii=False, indent=2))
     print(json.dumps(output["leads"], ensure_ascii=False, indent=2))
