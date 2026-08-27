@@ -68,46 +68,31 @@
     {
       "reason": "email inválido: 'carlos.example.com'",
       "raw": {
-        "_row_id": 3,
-        "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
         "name": "Carlos",
         "email": "carlos.example.com",
         "phone": "31 3333-4444",
         "company": "Beta Ltda",
         "message": "preciso de uma demo essa semana",
         "source": "indicacao",
-        "created_at": "Jan 7, 2026",
-        "nome": null
+        "created_at": "Jan 7, 2026"
       }
     },
     {
       "reason": "email ausente",
       "raw": {
-        "_row_id": 4,
-        "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
         "name": "Ana",
-        "email": null,
         "phone": "(21) 99999-0000",
         "company": "Gamma",
         "message": "qual o preço de vocês?",
         "source": "form-site",
-        "created_at": "2026/01/08",
-        "nome": null
+        "created_at": "2026/01/08"
       }
     },
     {
       "reason": "email ausente",
       "raw": {
-        "_row_id": 7,
-        "_ingested_at": "2026-08-27T19:32:30.609341+00:00",
-        "name": null,
-        "email": null,
-        "phone": null,
-        "company": null,
-        "message": null,
         "source": "form-site",
-        "created_at": "2026-01-10",
-        "nome": null
+        "created_at": "2026-01-10"
       }
     }
   ],

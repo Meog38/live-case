@@ -1,11 +1,23 @@
 import json
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+RAW_PATH = Path(__file__).parent / "leads_raw.json"
 BRONZE_PATH = Path(__file__).parent / "bronze" / "leads_bronze.json"
 SILVER_DIR = Path(__file__).parent / "silver"
 SILVER_PATH = SILVER_DIR / "leads_clean.json"
+
+GEMINI_MODEL = "gemini-3.6-flash"
+SEGMENT_PROMPT = """Classifique a intenção de compra do lead a partir da mensagem abaixo em exatamente uma palavra: hot, warm ou cold.
+- hot = quer comprar / urgente
+- warm = comparando fornecedores / decisão futura
+- cold = só pesquisando, sem intenção de compra próxima
+
+Mensagem: "{message}"
+
+Responda apenas com a palavra (hot, warm ou cold), sem explicação, sem pontuação."""
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -16,7 +28,7 @@ COLD_KEYWORDS = ["só ", "pesquisando", "sem pressa", "faculdade", "curiosidade"
 DATE_FORMATS = ["%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d", "%d-%m-%Y", "%b %d, %Y"]
 
 
-def load_bronze(path):
+def load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -84,7 +96,7 @@ def normalize_created_at(value):
     return None
 
 
-def classify_segment(message):
+def classify_segment_rules(message):
     if not message or not message.strip():
         return "unknown"
     text = message.lower()
@@ -95,6 +107,32 @@ def classify_segment(message):
     if any(k in text for k in COLD_KEYWORDS):
         return "cold"
     return "unknown"
+
+
+def make_ai_classifier():
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("[aviso] GEMINI_API_KEY ausente — usando classificador por regras.")
+        return classify_segment_rules
+
+    import google.generativeai as genai
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(GEMINI_MODEL)
+
+    def classify_segment_ai(message):
+        if not message or not message.strip():
+            return "unknown"
+        try:
+            response = model.generate_content(SEGMENT_PROMPT.format(message=message.strip()))
+            label = response.text.strip().lower()
+            if label in ("hot", "warm", "cold"):
+                return label
+            return classify_segment_rules(message)
+        except Exception as exc:
+            print(f"[aviso] chamada Gemini falhou ({exc}) — usando regras pra essa mensagem.")
+            return classify_segment_rules(message)
+
+    return classify_segment_ai
 
 
 def normalize_row(row):
@@ -111,7 +149,7 @@ def normalize_row(row):
     }
 
 
-def split_valid_rejected(bronze_rows):
+def split_valid_rejected(bronze_rows, raw_records):
     valid, rejected = [], []
     for row in bronze_rows:
         norm = normalize_row(row)
@@ -119,7 +157,7 @@ def split_valid_rejected(bronze_rows):
             valid.append(norm)
         else:
             reason = "email ausente" if not row.get("email") else f"email inválido: {row.get('email')!r}"
-            rejected.append({"reason": reason, "raw": row})
+            rejected.append({"reason": reason, "raw": raw_records[row["_row_id"]]})
     return valid, rejected
 
 
@@ -141,7 +179,7 @@ def merge_group(rows):
     return merged
 
 
-def build_leads(groups):
+def build_leads(groups, classify_fn):
     leads = []
     duplicates_removed = 0
     for email, rows in groups.items():
@@ -155,7 +193,7 @@ def build_leads(groups):
             "company": merged.get("company"),
             "source": merged.get("source"),
             "created_at": merged.get("created_at"),
-            "segment": classify_segment(merged.get("message")),
+            "segment": classify_fn(merged.get("message")),
         })
     return leads, duplicates_removed
 
@@ -176,10 +214,12 @@ def validate_output(bronze_rows, valid_rows, rejected_rows, leads, duplicates_re
 
 
 if __name__ == "__main__":
-    bronze_rows = load_bronze(BRONZE_PATH)
-    valid_rows, rejected_rows = split_valid_rejected(bronze_rows)
+    bronze_rows = load_json(BRONZE_PATH)
+    raw_records = load_json(RAW_PATH)
+    valid_rows, rejected_rows = split_valid_rejected(bronze_rows, raw_records)
     groups = group_by_email(valid_rows)
-    leads, duplicates_removed = build_leads(groups)
+    classify_fn = make_ai_classifier()
+    leads, duplicates_removed = build_leads(groups, classify_fn)
 
     validate_output(bronze_rows, valid_rows, rejected_rows, leads, duplicates_removed)
 
