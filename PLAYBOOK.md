@@ -42,3 +42,29 @@ Perguntas prováveis dos avaliadores:
 
 Não peça desculpa por não terminar. Eles disseram explicitamente que não
 precisa terminar tudo.
+
+## Multiagente (Task tool) - como usar nos 50 min
+
+Tem 4 subagentes prontos em .claude/agents/: data-explorer, spec-analyst,
+builder, verifier. O CLAUDE.md já instrui o Claude Code a seguir esse
+protocolo sozinho, mas o fluxo esperado é:
+
+1. Spec chegou -> dispara data-explorer + spec-analyst juntos (paralelo,
+   os dois só leem, sem risco). ~2-3 min.
+2. Você recebe: schema real do dado + checklist de requisitos + o que é
+   independente vs dependente. Você decide a decomposição, não deixa o
+   Claude decidir sozinho - esse é o seu momento de mostrar decisão
+   técnica pros avaliadores.
+3. Só manda builder em paralelo pra peças de verdade independentes (ex:
+   normalizar telefone e normalizar email são independentes; dedup
+   depende dos dois já normalizados, então não paraleliza com eles).
+   Se dependente, faz sequencial - não force paralelo pra parecer
+   sofisticada, isso queima tempo à toa.
+4. Depois de integrar as peças, dispara verifier com o checklist + o
+   output, nunca com o código (evita validar "de dentro" do próprio viés).
+5. Narre em voz alta cada disparo: o quê, por quê paralelo ou sequencial,
+   o que voltou. Isso é literalmente o que eles estão avaliando.
+
+Regra de ouro: se a tarefa só tem 1-2 peças, esquece orquestração e vai
+direto sequencial com o Claude. Multiagente só vale a pena quando tem
+peça de verdade independente pra paralelizar - senão é só overhead.

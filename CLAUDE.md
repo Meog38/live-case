@@ -43,3 +43,27 @@ tudo: um raciocínio bem conduzido vale mais que solução completa no susto.
 
 Python 3.x, rodando localmente. Vou compartilhar tela — mantenha respostas
 objetivas no terminal, sem textão.
+
+# Orquestração multiagente (Task tool)
+
+Você tem acesso a 4 subagentes definidos em .claude/agents/: data-explorer,
+spec-analyst, builder, verifier. Use o Task tool pra acioná-los. Protocolo:
+
+1. Assim que eu colar a spec e apontar o arquivo de entrada: dispare
+   data-explorer e spec-analyst EM PARALELO (os dois são só leitura, não
+   têm dependência entre si, é seguro rodar junto).
+2. Com os dois relatórios em mãos, PARE e me mostre o checklist de
+   requisitos + o que é independente vs dependente. Eu decido junto com
+   você como quebrar o trabalho antes de qualquer builder ser acionado —
+   não decida sozinho a decomposição.
+3. Só dispare builder em paralelo pra peças que o spec-analyst marcou como
+   independentes de verdade (sem estado compartilhado, sem um depender do
+   output do outro). Se só tiver 1-2 requisitos, ou eles forem
+   dependentes entre si, não force paralelismo — implementa sequencial
+   direto comigo, é mais rápido e mais fácil de eu acompanhar.
+4. Depois de qualquer integração (juntar as peças dos builders), dispare
+   verifier com o checklist + o output real, nunca com o código.
+5. Em toda etapa, resuma em 1-2 frases o que foi disparado e por quê antes
+   de eu confirmar. Eu preciso conseguir narrar isso pros avaliadores.
+6. Se algum builder em paralelo travar, dar erro ou produzir algo confuso,
+   pare os outros, resolve um de cada vez. Não empilhe problema.
